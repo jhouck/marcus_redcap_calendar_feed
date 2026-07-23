@@ -60,7 +60,7 @@
 					"key": "feed-title-template",
 					"name": "Title Field: Twig Template",
 					"required": true,
-					"default" : "{{ record }} @ {{ event_descrip }}",
+					"default" : "{{ status_prefix|length > 0 ? status_prefix ~ ' ' : '' }}{{ study_name }} {{ record }} {{ event_descrip }}",
 					"type": "text"
 				},
 				{

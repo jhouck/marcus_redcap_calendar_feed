@@ -140,6 +140,14 @@ class CalendarService {
             $feed     = $request->project->getFeed($request->feed);  
 
             $data = $this->getContextData($calendar->items, $feed->data_fields);
+            $statusPrefixes = [
+                0 => '',
+                1 => '',
+                2 => 'Confirmed',
+                3 => 'CXL',
+                4 => 'NCNS'
+            ];
+
             // For each of the calendar items
             foreach($calendar->getItems() as $item){
                 // Assign the status name (Due Date, Completed, etc.)
@@ -152,7 +160,11 @@ class CalendarService {
                     $item->forms = array_column($forms, 'form_name');
                 }
 
-                $context = array_merge((array) $item, [ 'data' => $data[$item->record] ]);
+                $context = array_merge((array) $item, [
+                    'data'          => $data[$item->record] ?? [],
+                    'study_name'    => $request->project->title,
+                    'status_prefix' => $statusPrefixes[$item->event_status] ?? ''
+                ]);
 
                 // Format the title, description, etc.
                 $item->title        = TemplateEngine::renderTemplate($feed->title_template, $context);
