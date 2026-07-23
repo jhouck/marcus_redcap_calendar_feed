@@ -39,7 +39,7 @@ class CalendarFeedWriter {
             "notes", 
             "forms",
             "title",
-            "desription",
+            "description",
             "location"
         ];
        
@@ -55,7 +55,30 @@ class CalendarFeedWriter {
         fputcsv($file, $columns);
         
         foreach($calendar->items as $item){
-            $eventDateTime = new \DateTime("$this->event_date $this->event_time");
+            $eventDateTime = null;
+            $eventDate = trim((string) $item->event_date);
+            $eventTime = trim((string) $item->event_time);
+
+            if ($eventDate !== '' && $eventTime !== '') {
+                foreach (['Y-m-d H:i:s', 'Y-m-d H:i'] as $eventDateTimeFormat) {
+                    $parsedEventDateTime = \DateTimeImmutable::createFromFormat(
+                        $eventDateTimeFormat,
+                        "$eventDate $eventTime"
+                    );
+                    $dateTimeErrors = \DateTimeImmutable::getLastErrors();
+
+                    if (
+                        $parsedEventDateTime !== false
+                        && (
+                            $dateTimeErrors === false
+                            || ($dateTimeErrors['warning_count'] === 0 && $dateTimeErrors['error_count'] === 0)
+                        )
+                    ) {
+                        $eventDateTime = $parsedEventDateTime->format("c");
+                        break;
+                    }
+                }
+            }
                         
             $forms = [];
             if (empty($item->forms)) {
@@ -74,7 +97,7 @@ class CalendarFeedWriter {
                 $item->event_status_name,
                 $item->event_date,
                 $item->event_time,
-                $eventDateTime->format("c"),
+                $eventDateTime,
                 str_replace("\n", " ", $item->notes),
                 implode(", ", $forms),
                 $item->title,
