@@ -92,23 +92,17 @@ class ApiController {
      */
     function error(Exception $error, int $statusCode = Response::HTTP_BAD_REQUEST) : Response {
 
-        $previous = [];
-        if ($error->getPrevious() != null){
-            $previous = [
-                'message' => $error->getPrevious()->getMessage(),
-                'text' => $error->getPrevious().""
-            ];
+        if (method_exists($this->module, 'log')){
+            $this->module->log('Public API error response generated.', [
+                'exception' => $error.""
+            ]);
         }
 
-        $error = [
+        $response = [
             'message'   => $error->getMessage(),
-            'code'      => $error->getCode(),
-            'file'      => $error->getFile(),
-            'line'      => $error->getLine(),
-            'trace'     => $error->getTrace(),
-            'previous'  => $previous
+            'code'      => $error->getCode()
         ];
 
-        return new JsonResponse($error, $statusCode);
+        return new JsonResponse($response, $statusCode);
     }    
 }
