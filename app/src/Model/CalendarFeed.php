@@ -58,7 +58,7 @@ class CalendarFeed {
 
     public const DEFAULT_KEY = "default";
     public const DEFAULT_DESCRIPTION_TEMPLATE = "Record: {{ record }}, Event: {{ event_descrip }}, Forms: {{ forms|join(', ')}}{{ notes|length > 0 ? ', Notes: ' ~ notes : '' }}";
-    public const DEFAULT_TITLE_TEMPLATE = "{{ record }} @ {{ event_descrip }}{{ arm_name|length > 0 ? ' (' ~ arm_name ~ ')' : '' }}";
+    public const DEFAULT_TITLE_TEMPLATE = "{{ status_prefix|length > 0 ? status_prefix ~ ' ' : '' }}{{ study_name }} {{ record }} {{ event_descrip }}";
     public const DEFAULT_LOCATION_TEMPLATE = "N/A";
 
     public function __construct(string $key = CalendarFeed::DEFAULT_KEY, string $name = "Default")
